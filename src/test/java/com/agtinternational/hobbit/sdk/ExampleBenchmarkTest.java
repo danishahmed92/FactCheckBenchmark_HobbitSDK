@@ -32,7 +32,7 @@ public class ExampleBenchmarkTest extends EnvironmentVariables{
     public void before() throws Exception {
         //ToDo: implement rabbit host resolve via docker DNS
         rabbitMqDockerizer = RabbitMqDockerizer.builder()
-                            .hostName("172.22.0.2")
+                            .hostName("127.0.0.1")
                             .useCachedContainer(true)
                             .build();
         rabbitMqDockerizer.run();
