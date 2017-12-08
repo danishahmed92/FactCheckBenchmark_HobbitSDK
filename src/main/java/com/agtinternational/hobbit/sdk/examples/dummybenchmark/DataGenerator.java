@@ -5,6 +5,7 @@ import org.hobbit.core.components.AbstractDataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -31,6 +32,11 @@ public class DataGenerator extends AbstractDataGenerator {
         int numberOfGenerators = getNumberOfGenerators();
 
         logger.debug("generateData()");
+
+        File file = new File("/resources");
+
+        file.listFiles();
+
         String data;
         int i=0;
         while(i<1) {
