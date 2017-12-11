@@ -223,13 +223,5 @@ public class DummyDataGenerator extends AbstractDataGenerator {
 		return RabbitMQUtils.writeString(dataString);
 	}
 
-	public static void main(String[] args) throws Exception {
-		BasicConfigurator.configure();
-
-		@SuppressWarnings("resource")
-		FactBenchDataGenerator obj = new FactBenchDataGenerator();
-		obj.generateData();
-		System.out.println("Done.....");
-		System.exit(100);
-	}
+	
 }
