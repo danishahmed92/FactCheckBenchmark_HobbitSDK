@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -168,7 +172,7 @@ public class DummyDataGenerator extends AbstractDataGenerator {
 								try {
 
 									Model model = ModelFactory.createDefaultModel();
-
+									
 									model.read(new FileReader(file), null, "TURTLE");
 									models.add(model);
 
