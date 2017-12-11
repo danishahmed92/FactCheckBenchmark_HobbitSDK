@@ -73,8 +73,9 @@ public class DataGenerator extends AbstractDataGenerator {
 			// System.out.println("Key = " + entry.getKey() + " Size : " +
 			// entry.getValue().size());
 			logger.info("Sending correct Models to TaskGenerator");
-			entry.getValue().forEach(model -> {
-				try {
+			entry.getValue().forEach(model -> { 
+				try { 
+					
 					byte[] data = modelToBytes(model);
 					sendDataToTaskGenerator(data);
 					sendDataToSystemAdapter(data);
