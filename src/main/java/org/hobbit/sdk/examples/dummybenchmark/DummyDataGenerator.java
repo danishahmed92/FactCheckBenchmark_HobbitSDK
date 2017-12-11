@@ -55,10 +55,10 @@ public class DummyDataGenerator extends AbstractDataGenerator {
 		String path = "E:/ProjectWorkspace/FactBench/test/correct/";
 		Map<String, List<Model>> correct = readFiles(path);
 
-
+		
 		path = "E:/ProjectWorkspace/FactBench/test/wrong/";
 		Map<String, List<Model>> wrong = readFiles(path);
-
+		
 		//Sending Data
 		for (Entry<String, List<Model>> entry : correct.entrySet()) {
 //			System.out.println("Key = " + entry.getKey() + " Size : " + entry.getValue().size());
@@ -72,7 +72,7 @@ public class DummyDataGenerator extends AbstractDataGenerator {
 					 }
 			});
 		}
-
+		
 		for (Entry<String, List<Model>> entry : wrong.entrySet()) {
 //			System.out.println("Key = " + entry.getKey() + " Size : " + entry.getValue().size());
 			entry.getValue().forEach(model->{
