@@ -32,8 +32,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 
-public class FactBenchDataGenerator extends AbstractDataGenerator {
-	final static Logger logger = LoggerFactory.getLogger(FactBenchDataGenerator.class);
+public class DataGenerator extends AbstractDataGenerator {
+	final static Logger logger = LoggerFactory.getLogger(DataGenerator.class);
 	/* taskGenerator byte array */
 	// private byte[] task;
 
