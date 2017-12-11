@@ -20,59 +20,57 @@ import java.util.concurrent.TimeUnit;
  * @author Roman Katerinenko
  */
 public class ComponentsExecutor {
-    private static final Logger logger = LoggerFactory.getLogger(ComponentsExecutor.class);
-    private final static int AWAIT_TERMINATION_MILLIS = 1;
-    private final static int CORE_POOL_SIZE = 100;
+	private static final Logger logger = LoggerFactory.getLogger(ComponentsExecutor.class);
+	private final static int AWAIT_TERMINATION_MILLIS = 1;
+	private final static int CORE_POOL_SIZE = 100;
 
-    private final List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<>());
-    private final ExecutorService executor = new ThreadPoolExecutor(0, CORE_POOL_SIZE, 60L, TimeUnit.SECONDS,
-            new SynchronousQueue<>());
+	private final List<Throwable> exceptions = Collections.synchronizedList(new ArrayList<>());
+	private final ExecutorService executor = new ThreadPoolExecutor(0, CORE_POOL_SIZE, 60L, TimeUnit.SECONDS,
+			new SynchronousQueue<>());
 
+	public void submit(Runnable runnable) {
+		executor.submit(runnable);
+	}
 
+	// public void submit(Component component){
+	// submit(component, false);
+	// }
 
-    public void submit(Runnable runnable) {
-        executor.submit(runnable);
-    }
+	public void submit(Component component) {
 
-//    public void submit(Component component){
-//        submit(component, false);
-//    }
+		executor.submit(() -> {
+			String compName = component.getClass().getSimpleName();
+			try {
+				logger.debug("Initing " + compName);
+				component.init();
+				logger.debug("Running " + compName);
+				component.run();
+			} catch (Throwable e) {
+				String message = compName + " error: " + e.getMessage();
+				logger.error(message);
+				exceptions.add(new Exception(message));
+			} finally {
+				try {
+					component.close();
+				} catch (IOException e) {
+					exceptions.add(e);
+				}
+			}
+		});
+	}
 
-    public void submit(Component component){
+	public void shutdown() throws InterruptedException {
+		executor.shutdown();
+		while (executor.isTerminated()) {
+			executor.awaitTermination(AWAIT_TERMINATION_MILLIS, TimeUnit.MILLISECONDS);
+		}
+	}
 
-        executor.submit(() -> {
-            String compName = component.getClass().getSimpleName();
-            try {
-                logger.debug("Initing "+compName);
-                component.init();
-                logger.debug("Running "+compName);
-                component.run();
-            } catch (Throwable e) {
-                String message = compName+" error: "+ e.getMessage();
-                logger.error(message);
-                exceptions.add(new Exception(message));
-            } finally {
-                try {
-                    component.close();
-                } catch (IOException e) {
-                    exceptions.add(e);
-                }
-            }
-        });
-    }
+	public Collection<Throwable> getExceptions() {
+		return exceptions;
+	}
 
-    public void shutdown() throws InterruptedException {
-        executor.shutdown();
-        while (executor.isTerminated()) {
-            executor.awaitTermination(AWAIT_TERMINATION_MILLIS, TimeUnit.MILLISECONDS);
-        }
-    }
-
-    public Collection<Throwable> getExceptions() {
-        return exceptions;
-    }
-
-    public boolean anyExceptions() {
-        return !getExceptions().isEmpty();
-    }
+	public boolean anyExceptions() {
+		return !getExceptions().isEmpty();
+	}
 }

@@ -7,19 +7,19 @@ import java.nio.charset.Charset;
  */
 public interface Communication {
 
-    void close() throws Exception;
+	void close() throws Exception;
 
-    String getName();
+	String getName();
 
-    Charset getCharset();
+	Charset getCharset();
 
-    Consumer getConsumer();
+	Consumer getConsumer();
 
-    void send(byte[] bytes) throws Exception;
+	void send(byte[] bytes) throws Exception;
 
-    void send(String string) throws Exception;
+	void send(String string) throws Exception;
 
-    interface Consumer {
-        void handleDelivery(byte[] bytes);
-    }
+	interface Consumer {
+		void handleDelivery(byte[] bytes);
+	}
 }
