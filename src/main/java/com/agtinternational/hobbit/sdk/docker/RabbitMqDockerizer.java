@@ -74,7 +74,7 @@ public class RabbitMqDockerizer extends PullBasedDockerizer {
 
         public Builder() {
             super("RabbitMqDockerizer");
-            hostName("rabbit");
+            hostName("127.0.0.1");
             containerName("rabbit");
             imageName("rabbitmq:latest");
             addPortBindings("5672/tcp", PortBinding.of("0.0.0.0", 5672));
