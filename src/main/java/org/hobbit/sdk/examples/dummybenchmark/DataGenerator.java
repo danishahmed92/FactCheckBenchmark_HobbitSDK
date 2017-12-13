@@ -1,4 +1,4 @@
-package com.agtinternational.hobbit.sdk.examples.benchmark;
+package com.agtinternational.hobbit.sdk.examples.dummybenchmark;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -62,19 +62,19 @@ public class DataGenerator extends AbstractDataGenerator {
 		int numberOfGenerators = getNumberOfGenerators();
 
 		logger.info("Loading correct models");
-		String path = "Data/test/correct";
+		String path = "src/main/resources/test/correct";
 		Map<String, List<Model>> correct = readFiles(path);
 
 		logger.info("Loading wrong models");
-		path = "Data/test/wrong/";
+		path = "src/main/resources/test/wrong/";
 		Map<String, List<Model>> wrong = readFiles(path);
 
 		logger.info("Loading train correct models");
-		path = "Data/train/correct/";
+		path = "src/main/resources/train/correct/";
 		Map<String, List<Model>> trainCorrect = readFiles(path);
 		
 		logger.info("Loading train wrong models");
-		path = "Data/train/wrong/";
+		path = "src/main/resources/train/wrong/";
 		Map<String, List<Model>> trainWrong = readFiles(path);
 		
 		
