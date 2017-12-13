@@ -46,7 +46,8 @@ public class DataGenerator extends AbstractDataGenerator {
 	@Override
 	public void init() throws Exception {
 		super.init();
-
+		//
+		
 		// long seedId = getGeneratorId();
 		// long totalGenerators = getNumberOfGenerators();
 
