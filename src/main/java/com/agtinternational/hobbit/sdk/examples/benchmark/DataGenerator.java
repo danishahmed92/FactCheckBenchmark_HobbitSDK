@@ -61,22 +61,48 @@ public class DataGenerator extends AbstractDataGenerator {
 		int dataGeneratorId = getGeneratorId();
 		int numberOfGenerators = getNumberOfGenerators();
 
-		logger.info("Fetching correct models");
-		String path = "resources/test/correct";
+		logger.info("Loading correct models");
+		String path = "Data/test/correct";
 		Map<String, List<Model>> correct = readFiles(path);
 
-		logger.info("Fetching wrong models");
-		path = "resources/test/wrong/";
+		logger.info("Loading wrong models");
+		path = "Data/test/wrong/";
 		Map<String, List<Model>> wrong = readFiles(path);
 
+		logger.info("Loading train correct models");
+		path = "Data/train/correct/";
+		Map<String, List<Model>> trainCorrect = readFiles(path);
+		
+		logger.info("Loading train wrong models");
+		path = "Data/train/wrong/";
+		Map<String, List<Model>> trainWrong = readFiles(path);
+		
+		
+		
 		// Sending Data
+		logger.info("Sending correct Models to TaskGenerator");
+		sendData(correct);
+
+		logger.info("Sending wrong Models to TaskGenerator");
+		sendData(wrong);
+		
+		logger.info("Sending train correct models to TaskGenerator");
+		sendData(trainCorrect);
+		
+		logger.info("Sending train wrong models to TaskGenerator");
+		sendData(trainWrong);
+
+		// if file is large then you need to break it into chunks
+		// sample at:
+		// https://github.com/hobbit-project/faceted-benchmark/blob/master/data-generator/src/main/java/org/hobbit/SampleDataGenerator.java
+
+	}
+
+	private void sendData(Map<String, List<Model>> correct) {
 		for (Entry<String, List<Model>> entry : correct.entrySet()) {
-			// System.out.println("Key = " + entry.getKey() + " Size : " +
-			// entry.getValue().size());
-			logger.info("Sending correct Models to TaskGenerator");
 			entry.getValue().forEach(model -> { 
 				try { 
-					
+					logger.info(entry.getKey() + "\n" + model.toString());
 					byte[] data = modelToBytes(model);
 					sendDataToTaskGenerator(data);
 					sendDataToSystemAdapter(data);
@@ -85,26 +111,6 @@ public class DataGenerator extends AbstractDataGenerator {
 				}
 			});
 		}
-
-		for (Entry<String, List<Model>> entry : wrong.entrySet()) {
-			// System.out.println("Key = " + entry.getKey() + " Size : " +
-			// entry.getValue().size());
-			logger.info("Sending wrong Models to TaskGenerator");
-			entry.getValue().forEach(model -> {
-				try {
-					byte[] data = modelToBytes(model);
-					sendDataToTaskGenerator(data);
-					// sendDataToSystemAdapter(data);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
-		}
-
-		// if file is large then you need to break it into chunks
-		// sample at:
-		// https://github.com/hobbit-project/faceted-benchmark/blob/master/data-generator/src/main/java/org/hobbit/SampleDataGenerator.java
-
 	}
 
 	/**
@@ -117,11 +123,9 @@ public class DataGenerator extends AbstractDataGenerator {
 	 * @throws URISyntaxException
 	 */
 	private Map<String, List<Model>> readFiles(String directoryPath) {
-		System.out.println("HERE");
 		Map<String, List<Model>> map = new HashMap<String, List<Model>>();
 		String path = directoryPath;
 		try (Stream<Path> paths = Files.walk(Paths.get(path))) {
-			System.out.println("path " + path);
 			paths.forEach(p -> {
 				File directoryName = new File(p.toString());
 				if (directoryName.isDirectory()) {
@@ -185,7 +189,7 @@ public class DataGenerator extends AbstractDataGenerator {
 	}
 
 	public static void main(String[] args) throws Exception {
-		// BasicConfigurator.configure();
+		BasicConfigurator.configure();
 
 		@SuppressWarnings("resource")
 		DataGenerator obj = new DataGenerator();
