@@ -8,6 +8,8 @@ import org.hobbit.vocab.HOBBIT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 
 /**
  * This code is here just for testing and debugging the SDK.
@@ -21,7 +23,14 @@ public class DummyEvalModule extends AbstractEvaluationModule {
     @Override
     protected void evaluateResponse(byte[] expectedData, byte[] receivedData, long taskSentTimestamp, long responseReceivedTimestamp) throws Exception {
         // evaluate the given response and store the result, e.g., increment internal counters
+
+
         logger.debug("evaluateResponse()");
+        logger.debug(new String(expectedData) + ">>>>>" + new String(receivedData));
+        if (receivedData.toString().contains(expectedData.toString()))
+            logger.debug("CORRRECT Anserr");
+        else
+            logger.debug("NOT QUITE Anserr");
     }
 
     @Override

@@ -33,7 +33,16 @@ public class DummySystemAdapter extends AbstractSystemAdapter {
     @Override
     public void receiveGeneratedTask(String taskId, byte[] data) {
         // handle the incoming task and create a result
+
+
         String result = "result_"+taskId;
+
+        if (Integer.parseInt(taskId) % 2 == 0)
+            result = "true";
+        else
+            result = "false";
+
+
         logger.debug("receiveGeneratedTask({})->{}",taskId, new String(data));
 
         // Send the result to the evaluation storage
