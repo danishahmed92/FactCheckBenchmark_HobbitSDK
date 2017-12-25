@@ -1,16 +1,10 @@
 package org.hobbit.sdk.examples.dummybenchmark;
 
-import com.rabbitmq.client.AMQP;
-import org.apache.commons.io.Charsets;
-import org.hobbit.core.Commands;
-import org.hobbit.core.Constants;
 import org.hobbit.core.components.AbstractSystemAdapter;
-import org.hobbit.sdk.CommonConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * @author Pavel Smirnov
@@ -38,7 +32,16 @@ public class SystemAdapter extends AbstractSystemAdapter {
     @Override
     public void receiveGeneratedTask(String taskId, byte[] data) {
         // handle the incoming task and create a result
+
+
         String result = "result_"+taskId;
+
+        if (Integer.parseInt(taskId) % 2 == 0)
+            result = "true";
+        else
+            result = "false";
+
+
         logger.debug("receiveGeneratedTask({})->{}",taskId, new String(data));
 
         // Send the result to the evaluation storage
