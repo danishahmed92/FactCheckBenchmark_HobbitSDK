@@ -1,4 +1,4 @@
-package com.agtinternational.hobbit.sdk.examples.dummybenchmark;
+package org.hobbit.sdk.examples.dummybenchmark;
 
 import java.io.File;
 import java.io.FileNotFoundException;
