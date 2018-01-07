@@ -89,44 +89,6 @@ public class DummyDataGenerator extends AbstractDataGenerator {
 					 }
 			});
 		}
-
-		// TODO CREATE dataGeneratorId && numberOfGenerators
-
-		// logger.info("Fetching correct models");
-		// List<Model> correct =
-		// readModels("E:/ProjectWorkspace/FactBench/test/correct/");
-
-		// logger.info("Fetching wrong models");
-		// List<Model> wrong = readModels("E:/ProjectWorkspace/FactBench/test/wrong/");
-
-		// logger.info("Correct: " + correct.size() + " Wrong: " + wrong.size());
-
-		// logger.info("Sending Correct Models to TaskGenerator and SystemAdaptor");
-		// correct.forEach(model -> {
-		// try {
-		// byte[] data = modelToBytes(model);
-		// sendDataToTaskGenerator(data);
-		// sendDataToSystemAdapter(data);
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
-		// });
-		//
-		// logger.info("Sending Incorrect Models to Datagenerator and Task Generator");
-		// wrong.forEach(model -> {
-		// try {
-		// byte[] data = modelToBytes(model);
-		// sendDataToTaskGenerator(data);
-		// sendDataToSystemAdapter(data);
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
-		// });
-
-		// if file is large then you need to break it into chunks
-		// sample at:
-		// https://github.com/hobbit-project/faceted-benchmark/blob/master/data-generator/src/main/java/org/hobbit/SampleDataGenerator.java
-
 	}
 
 	/**
