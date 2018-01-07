@@ -58,13 +58,13 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
-            <!--<scope>test</scope>-->
+            <!--<scope>factbench.test</scope>-->
         </dependency>
         <dependency>
             <groupId>com.github.stefanbirkner</groupId>
             <artifactId>system-rules</artifactId>
             <version>1.16.0</version>
-            <!--<scope>test</scope>-->
+            <!--<scope>factbench.test</scope>-->
         </dependency>
     </dependencies>
 

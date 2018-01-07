@@ -1,5 +1,6 @@
 package org.hobbit.sdk.examples.dummybenchmark;
 
+import org.aksw.defacto.DefactoBytes;
 import org.hobbit.core.components.AbstractSystemAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,8 @@ public class DummySystemAdapter extends AbstractSystemAdapter {
 
 
         String result = "result_"+taskId;
+
+//        DefactoBytes.FactCheckFromBytes(taskId,data);
 
         if (Integer.parseInt(taskId) % 2 == 0)
             result = "true";

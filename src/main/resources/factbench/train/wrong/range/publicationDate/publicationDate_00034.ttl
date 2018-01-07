@@ -11,9 +11,9 @@
         dbo:to      "1972"^^xsd:gYear .
 
 <http://rdf.freebase.com/ns/m.05_m0c>
-        rdfs:label     "Der große Eisenbahnraub"@de , "The Great Train Robbery"@en , "Un train d'or pour la Crimée"@fr ;
+        rdfs:label     "Der große Eisenbahnraub"@de , "The Great Train Robbery"@en , "Un factbench.train d'or pour la Crimée"@fr ;
         owl:sameAs     <http://de.dbpedia.org/resource/Der_große_Eisenbahnraub_(Roman)> , <http://fr.dbpedia.org/resource/Un_train_d'or_pour_la_Crimée> , <http://dbpedia.org/resource/The_Great_Train_Robbery_(novel)> ;
-        skos:altLabel  "Un train d'or pour la Crimee"@fr , "Un Train d'Or pour la Crimee"@fr , "The Great Train Robbery"@fr , "The Great Train Robbery"@de , "Un train d'or pour la Crimée"@fr , "Der große Eisenbahnraub"@de , "Un Train d'Or pour la Crimée"@fr .
+        skos:altLabel  "Un factbench.train d'or pour la Crimee"@fr , "Un Train d'Or pour la Crimee"@fr , "The Great Train Robbery"@fr , "The Great Train Robbery"@de , "Un factbench.train d'or pour la Crimée"@fr , "Der große Eisenbahnraub"@de , "Un Train d'Or pour la Crimée"@fr .
 
 <http://rdf.freebase.com/ns/m.03hpr>
         rdfs:label     "Harlan Ellison"@en , "Harlan Ellison"@fr , "Harlan Ellison"@de ;

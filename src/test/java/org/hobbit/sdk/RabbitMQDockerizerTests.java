@@ -25,7 +25,7 @@ public class RabbitMQDockerizerTests {
 //        dockerizer.run();
 //
 //        dockerizer.stop();
-//        System.out.println("Starting cached test again");
+//        System.out.println("Starting cached factbench.test again");
 //        dockerizer.run();
 //        dockerizer.stop();
 //        assertNull(dockerizer.anyExceptions());
