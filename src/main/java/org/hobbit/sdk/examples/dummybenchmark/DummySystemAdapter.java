@@ -1,6 +1,5 @@
 package org.hobbit.sdk.examples.dummybenchmark;
 
-import org.aksw.defacto.DefactoBytes;
 import org.hobbit.core.components.AbstractSystemAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

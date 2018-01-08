@@ -39,6 +39,7 @@ import java.io.IOException;
 
 public class DummyDataGenerator extends AbstractDataGenerator {
     private static final Logger logger = LoggerFactory.getLogger(DummyDataGenerator.class);
+	private final String factBenchPath = "/Users/oshando/test/wrong";//"src/main/resources/factbench/test/correct";
 
     @Override
     public void init() throws Exception {
@@ -56,70 +57,51 @@ public class DummyDataGenerator extends AbstractDataGenerator {
         int dataGeneratorId = getGeneratorId();
         int numberOfGenerators = getNumberOfGenerators();
 
-		String path = "E:/ProjectWorkspace/FactBench/test/correct/";
-		Map<String, List<Model>> correct = readFiles(path);
+		logger.debug("generateData()");
 
-		
-		path = "E:/ProjectWorkspace/FactBench/test/wrong/";
-		Map<String, List<Model>> wrong = readFiles(path);
-		
-		//Sending Data
-		for (Entry<String, List<Model>> entry : correct.entrySet()) {
-//			System.out.println("Key = " + entry.getKey() + " Size : " + entry.getValue().size());
-			entry.getValue().forEach(model->{
+		logger.info("Loading models");
+		Map<String, List<Model>> factBenchModels = readFiles(factBenchPath);
+
+		// Sending Data
+		logger.info("Sending Models to TaskGenerator");
+
+		//For each model, send it's data and expected result to the TaskGenerator
+		for (Map.Entry<String, List<Model>> entry : factBenchModels.entrySet()) {
+
+			entry.getValue().forEach(model -> {
 				try {
-					 byte[] data = modelToBytes(model);
-					 sendDataToTaskGenerator(data);
-					 sendDataToSystemAdapter(data);
-					 } catch (IOException e) {
-					 e.printStackTrace();
-					 }
-			});
-		}
-		
-		for (Entry<String, List<Model>> entry : wrong.entrySet()) {
-//			System.out.println("Key = " + entry.getKey() + " Size : " + entry.getValue().size());
-			entry.getValue().forEach(model->{
-				try {
-					 byte[] data = modelToBytes(model);
-					 sendDataToTaskGenerator(data);
-					 sendDataToSystemAdapter(data);
-					 } catch (IOException e) {
-					 e.printStackTrace();
-					 }
+					sendDataToTaskGenerator(modelToBytes(model, entry.getKey()));
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			});
 		}
 	}
 
-	/**
-	 *
-	 * @param directoryPath
-	 *            String
-	 * @return
-	 * @return List<Model>
-	 * @throws IOException
-	 */
-	private Map<String, List<Model>> readFiles(String directoryPath) throws IOException {
-
+	private Map<String, List<Model>> readFiles(String directoryPath) {
 		Map<String, List<Model>> map = new HashMap<String, List<Model>>();
 		String path = directoryPath;
+
 		try (Stream<Path> paths = Files.walk(Paths.get(path))) {
 			paths.forEach(p -> {
 				File directoryName = new File(p.toString());
 				if (directoryName.isDirectory()) {
+
 					String key = directoryName.getName();
+
+					logger.debug("Key: " + directoryName.getPath());
+
+
 					if (map.containsKey(directoryName.getName())) {
-						List<File> files = (List<File>) Arrays.asList(directoryName.listFiles());
+						List<File> files = Arrays.asList(directoryName.listFiles());
 						ArrayList<Model> models = new ArrayList<>();
 						files.forEach(file -> {
 							try {
-//								System.out.println(file);
-//								System.out.println(file.getPath());
 								Model model = ModelFactory.createDefaultModel();
 								model.read(new FileReader(file), null, "TURTLE");
 								models.add(model);
 							} catch (FileNotFoundException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						});
@@ -127,20 +109,17 @@ public class DummyDataGenerator extends AbstractDataGenerator {
 
 					} else {
 						ArrayList<Model> models = new ArrayList<>();
-						List<File> files = (List<File>) Arrays.asList(directoryName.listFiles());
+						List<File> files = Arrays.asList(directoryName.listFiles());
 						if (files.get(0).isFile()) {
 
 							files.forEach(file -> {
 								try {
 
 									Model model = ModelFactory.createDefaultModel();
-									
 									model.read(new FileReader(file), null, "TURTLE");
 									models.add(model);
 
 								} catch (FileNotFoundException e) {
-									// TODO Auto-generated catch block
-
 									e.printStackTrace();
 								}
 							});
@@ -154,37 +133,23 @@ public class DummyDataGenerator extends AbstractDataGenerator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		// List<Model> models = new ArrayList<Model>();
-
-		// TODO store files directory wise.
-		// Files.walk(Paths.get(directoryPath)).filter(Files::isRegularFile).forEach(path
-		// -> {
-		// try {
-		// Model model = ModelFactory.createDefaultModel();
-		// model.read(new FileReader(path.toString()), null, "TURTLE");
-		// models.add(model);
-		// } catch (FileNotFoundException e) {
-		// e.printStackTrace();
-		// }
-		//
-		// });
-		// return models;
-
 		return map;
 	}
 
-	protected void createStatements(List<Statement> statementList) {
+	//Converts model and expected answer to bytes
+	protected byte[] modelToBytes(Model tripleModel, String modelPath) {
 
-	}
+		String expectedAnswer = "";
 
-	protected byte[] modelToBytes(Model tripleModel) {
-		// byte[] data;
+		if (modelPath.contains("correct"))
+			expectedAnswer = "true";
+		else
+			expectedAnswer = "false";
 
 		StringWriter stringWriter = new StringWriter();
 		tripleModel.write(stringWriter, "TURTLE");
 
-		String dataString = stringWriter.toString();
+		String dataString = expectedAnswer + ":*:" + stringWriter.toString();
 
 		return RabbitMQUtils.writeString(dataString);
 	}

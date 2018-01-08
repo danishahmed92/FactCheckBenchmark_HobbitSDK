@@ -51,10 +51,6 @@ public class DummyTaskGenerator extends AbstractTaskGenerator {
             // Create an ID for the task
             String taskId = getNextTaskId();
 
-            // Create the task and the expected answer
-            String taskDataStr = "task_" + taskId + "_" + dataString;
-            String expectedAnswerDataStr = "result_" + taskId;
-
             // Send the task to the system (and store the timestamp)
             long timestamp = System.currentTimeMillis();
 
