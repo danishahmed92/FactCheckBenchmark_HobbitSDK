@@ -33,8 +33,6 @@ public class DummySystemAdapter extends AbstractSystemAdapter {
     @Override
     public void receiveGeneratedTask(String taskId, byte[] data) {
         // handle the incoming task and create a result
-
-
         String result = "result_"+taskId;
 
 //        DefactoBytes.FactCheckFromBytes(taskId,data);

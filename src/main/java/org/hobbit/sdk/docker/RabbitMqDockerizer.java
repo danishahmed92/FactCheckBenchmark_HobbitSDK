@@ -7,6 +7,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.messages.PortBinding;
+import org.hobbit.sdk.docker.builders.common.PullBasedDockersBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
