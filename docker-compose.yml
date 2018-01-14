@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+
+  mysql-dev:
+    image: mysql:5.5
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: dbpedia_metrics
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 12345
+    volumes:
+      - "./data:/var/lib/mysql"
+      - "./data/dbpedia_metrics.sql:/docker-entrypoint-initdb.d/dbpedia_metrics.sql"
+    ports:
+      - "3308:3306"

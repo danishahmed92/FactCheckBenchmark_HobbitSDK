@@ -5,6 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import org.yaml.snakeyaml.Yaml;
+
+import javax.security.auth.login.Configuration;
+
 
 /**
  * This code is here just for testing and debugging the SDK.
@@ -19,6 +26,12 @@ public class DummySystemAdapter extends AbstractSystemAdapter {
         super.init();
         logger.debug("Init()");
         // Your initialization code comes here...
+
+            Yaml yaml=new Yaml();
+            try( InputStream in = Files.newInputStream( Paths.get("/docker-compose.yml" ) ) ) {
+                Configuration config = yaml.loadAs( in, Configuration.class );
+            System.out.println( config.toString() );
+        }
 
         // You can access the RDF model this.systemParamModel to retrieve meta data about this system adapter
         logger.debug("Sending SYSTEM_READY_SIGNAL");
