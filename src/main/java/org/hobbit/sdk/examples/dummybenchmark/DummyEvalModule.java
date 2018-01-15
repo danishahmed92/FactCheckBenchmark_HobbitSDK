@@ -18,7 +18,10 @@ import java.io.IOException;
 
 public class DummyEvalModule extends AbstractEvaluationModule {
     private static final Logger logger = LoggerFactory.getLogger(DummyEvalModule.class);
-
+	private static int truePositive = 0;
+    private static int falsePositive = 0;
+    private static int trueNegative = 0;
+    private static int falseNegative = 0;
 
     @Override
     protected void evaluateResponse(byte[] expectedData, byte[] receivedData, long taskSentTimestamp, long responseReceivedTimestamp) throws Exception {
@@ -28,9 +31,13 @@ public class DummyEvalModule extends AbstractEvaluationModule {
         logger.debug("evaluateResponse()");
         logger.debug(new String(expectedData) + ">>>>>" + new String(receivedData));
         if (receivedData.toString().contains(expectedData.toString()))
-            logger.debug("CORRRECT Anserr");
+            logger.debug("CORRRECT Answer");
         else
-            logger.debug("NOT QUITE Anserr");
+            logger.debug("NOT QUITE Answer");
+    }
+	
+	public static double calculateAccuracy() {
+        return (truePositive + trueNegative) / (double)(truePositive + trueNegative + falsePositive + falseNegative);
     }
 
     @Override
