@@ -23,10 +23,28 @@ public class DummyEvalModule extends AbstractEvaluationModule {
     private static int trueNegative = 0;
     private static int falseNegative = 0;
 
+    // expectedData:    true/false
+    // received Data:   true/false _percentage_
+    // totalDataConsidered = trueNegative + falseNegative
+    // DataIdentifiedIncorrectly = totalDataConsidered - (truePositive + falsePositive)
+    // DataIdentifiedCorrectly = totalDataConsidered - DataIdentifiedIncorrectly
     @Override
     protected void evaluateResponse(byte[] expectedData, byte[] receivedData, long taskSentTimestamp, long responseReceivedTimestamp) throws Exception {
         // evaluate the given response and store the result, e.g., increment internal counters
 
+        String rData = new String((receivedData));
+        String eData = new String((expectedData));
+
+        if (rData.contains(eData)) {
+            if (eData.equals("true"))
+                truePositive++;
+            else
+                trueNegative++;
+        } else if (eData.equals("true") && rData.contains("false")) {
+            falseNegative++;
+        } else if (rData.contains("true") && eData.equals("false")) {
+            falsePositive++;
+        }
 
         logger.debug("evaluateResponse()");
         logger.debug(new String(expectedData) + ">>>>>" + new String(receivedData));
@@ -38,6 +56,16 @@ public class DummyEvalModule extends AbstractEvaluationModule {
 	
 	public static double calculateAccuracy() {
         return (truePositive + trueNegative) / (double)(truePositive + trueNegative + falsePositive + falseNegative);
+    }
+
+    // relevantItemsRetrieved / retrievedItemsa
+    public static double calculatePrecision() {
+        return truePositive  / (double)(truePositive + falsePositive);
+    }
+
+    // relevantItemsRetrieved / relevantItems
+    public static double calculateRecall() {
+        return truePositive  / (double)(truePositive + falseNegative);
     }
 
     @Override
