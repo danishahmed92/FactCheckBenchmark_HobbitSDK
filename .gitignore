@@ -7,6 +7,8 @@
 #HobbitSDK files:
 /src/main/resources/test/
 /src/main/resources/train/
+hobbit-java-sdk.iml
+/target/
 
 
 
@@ -116,4 +118,10 @@ buildNumber.properties
 .idea/inspectionProfiles/
 
 .idea/misc.xml
-hobbit-java-sdk.iml
+
+data/dbpedia_metrics/
+data/ib_logfile0
+data/ib_logfile1
+data/ibdata1
+data/mysql/
+data/performance_schema/
