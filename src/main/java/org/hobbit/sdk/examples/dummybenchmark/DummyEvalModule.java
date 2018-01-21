@@ -23,6 +23,9 @@ public class DummyEvalModule extends AbstractEvaluationModule {
     private static int trueNegative = 0;
     private static int falseNegative = 0;
 
+    private long taskSentTimestamp = System.currentTimeMillis();
+    private long responseReceivedTimestamp = System.currentTimeMillis();
+    private long runTime = System.currentTimeMillis();
     // expectedData:    true/false
     // received Data:   true/false _percentage_
     // totalDataConsidered = trueNegative + falseNegative
@@ -31,6 +34,8 @@ public class DummyEvalModule extends AbstractEvaluationModule {
     @Override
     protected void evaluateResponse(byte[] expectedData, byte[] receivedData, long taskSentTimestamp, long responseReceivedTimestamp) throws Exception {
         // evaluate the given response and store the result, e.g., increment internal counters
+        this.taskSentTimestamp = taskSentTimestamp;
+        this.responseReceivedTimestamp = responseReceivedTimestamp;
 
         String rData = new String((receivedData));
         String eData = new String((expectedData));
@@ -45,13 +50,14 @@ public class DummyEvalModule extends AbstractEvaluationModule {
         } else if (rData.contains("true") && eData.equals("false")) {
             falsePositive++;
         }
-
+        runTime = taskSentTimestamp - responseReceivedTimestamp;
         logger.debug("evaluateResponse()");
         logger.debug(new String(expectedData) + ">>>>>" + new String(receivedData));
         if (receivedData.toString().contains(expectedData.toString()))
             logger.debug("CORRRECT Answer");
         else
             logger.debug("NOT QUITE Answer");
+        logger.debug("Task Run Time : " + runTime);
     }
 	
 	public static double calculateAccuracy() {
@@ -73,6 +79,7 @@ public class DummyEvalModule extends AbstractEvaluationModule {
         logger.debug("summarizeEvaluation()");
         // All tasks/responsens have been evaluated. Summarize the results,
         // write them into a Jena model and send it to the benchmark controller.
+        logger.debug("Overall accuracy of FactCheck was " + (calculateAccuracy()*100) + "%");
         Model model = createDefaultModel();
         Resource experimentResource = model.getResource(experimentUri);
         model.add(experimentResource , RDF.type, HOBBIT.Experiment);
