@@ -27,11 +27,6 @@ public class DummySystemAdapter extends AbstractSystemAdapter {
         logger.debug("Init()");
         // Your initialization code comes here...
 
-            Yaml yaml=new Yaml();
-            try( InputStream in = Files.newInputStream( Paths.get("/docker-compose.yml" ) ) ) {
-                Configuration config = yaml.loadAs( in, Configuration.class );
-            System.out.println( config.toString() );
-        }
 
         // You can access the RDF model this.systemParamModel to retrieve meta data about this system adapter
         logger.debug("Sending SYSTEM_READY_SIGNAL");
