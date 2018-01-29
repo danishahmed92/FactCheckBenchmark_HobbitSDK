@@ -13,61 +13,56 @@ import java.io.IOException;
 
 public class DummyTaskGenerator extends AbstractTaskGenerator {
     private static final Logger logger = LoggerFactory.getLogger(DummyTaskGenerator.class);
+    private final String REGEX_SEPARATOR = ":\\*:";
+
 
     @Override
-    protected void generateTask(byte[] bytes) throws Exception {
-
+    public void init() throws Exception {
+        // Always init the super class first!
+        super.init();
+        logger.debug("Init()");
+        // Your initialization code comes here...
     }
 
-    public class TaskGenerator extends AbstractTaskGenerator {
+    @Override
+    protected void generateTask(byte[] data) throws Exception {
 
-        private final String REGEX_SEPARATOR = ":\\*:";
+        //Split data using sepatator to extract query and expected
+        String[] dataString = new String(data).split(REGEX_SEPARATOR);
 
-        @Override
-        public void init() throws Exception {
-            // Always init the super class first!
-            super.init();
-            logger.debug("Init()");
-            // Your initialization code comes here...
-        }
+      //  logger.debug("Expected Answer: " + dataString[0] + "\nData: " + dataString[1]);
 
-        @Override
-        protected void generateTask(byte[] data) throws Exception {
+        // Create tasks based on the incoming data inside this method.
+        // You might want to use the id of this task generator and the
+        // number of all task generators running in parallel.
 
-            //Split data using sepatator to extract query and expected
-            String[] dataString = new String(data).split(REGEX_SEPARATOR);
+        //TODO Research how these data members can be used
+        logger.debug("generateTask()");
+        int dataGeneratorId = getGeneratorId();
+        int numberOfGenerators = getNumberOfGenerators();
 
-            logger.debug("Expected Answer: " + dataString[0] + "\nData: " + dataString[1]);
+        // Create an ID for the task
+        String taskId = getNextTaskId();
 
-            // Create tasks based on the incoming data inside this method.
-            // You might want to use the id of this task generator and the
-            // number of all task generators running in parallel.
+        // Send the task to the system (and store the timestamp)
+        long timestamp = System.currentTimeMillis();
 
-            //TODO Research how these data members can be used
-            logger.debug("generateTask()");
-            int dataGeneratorId = getGeneratorId();
-            int numberOfGenerators = getNumberOfGenerators();
 
-            // Create an ID for the task
-            String taskId = getNextTaskId();
+        System.out.println(taskId);
+      //  logger.debug("sendTaskToSystemAdapter({})->{}", taskId, dataString[1]);
+        sendTaskToSystemAdapter(taskId, dataString[1].getBytes());
 
-            // Send the task to the system (and store the timestamp)
-            long timestamp = System.currentTimeMillis();
-
-            logger.debug("sendTaskToSystemAdapter({})->{}", taskId, dataString[1]);
-            sendTaskToSystemAdapter(taskId, dataString[1].getBytes());
-
-            // Send the expected answer to the evaluation store
-            logger.debug("sendTaskToEvalStorage({})->{}", taskId, dataString[0]);
-            sendTaskToEvalStorage(taskId, timestamp, dataString[0].getBytes());
-        }
-
-        @Override
-        public void close() throws IOException {
-            logger.debug("close()");
-            // Always close the super class after yours!
-            super.close();
-        }
-
+        // Send the expected answer to the evaluation store
+        logger.debug("sendTaskToEvalStorage({})->{}", taskId, dataString[0]);
+        sendTaskToEvalStorage(taskId, timestamp, dataString[0].getBytes());
     }
+
+    @Override
+    public void close() throws IOException {
+        logger.debug("close()");
+        // Always close the super class after yours!
+        super.close();
+    }
+
+
 }
