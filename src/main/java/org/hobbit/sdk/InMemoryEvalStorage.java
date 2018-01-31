@@ -27,7 +27,7 @@ public class InMemoryEvalStorage extends AbstractEvaluationStorage {
 
     @Override
     public void receiveExpectedResponseData(String s, long l, byte[] bytes) {
-        logger.debug("receiveExpectedResponseData()->{}",new String(bytes));
+      //  logger.debug("receiveExpectedResponseData()->{}",new String(bytes));
         int actualSize = bytes.length / 1024;
         expectedResponses.add(new SerializableResult(l,bytes));
     }

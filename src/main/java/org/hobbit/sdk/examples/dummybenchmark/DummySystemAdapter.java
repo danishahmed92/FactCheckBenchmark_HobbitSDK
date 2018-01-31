@@ -1,16 +1,17 @@
 package org.hobbit.sdk.examples.dummybenchmark;
 
+
 import org.hobbit.core.components.AbstractSystemAdapter;
+import org.hobbit.sdk.FCApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import org.yaml.snakeyaml.Yaml;
-
-import javax.security.auth.login.Configuration;
+import java.nio.ByteBuffer;
 
 
 /**
@@ -27,11 +28,6 @@ public class DummySystemAdapter extends AbstractSystemAdapter {
         logger.debug("Init()");
         // Your initialization code comes here...
 
-            Yaml yaml=new Yaml();
-            try( InputStream in = Files.newInputStream( Paths.get("/docker-compose.yml" ) ) ) {
-                Configuration config = yaml.loadAs( in, Configuration.class );
-            System.out.println( config.toString() );
-        }
 
         // You can access the RDF model this.systemParamModel to retrieve meta data about this system adapter
         logger.debug("Sending SYSTEM_READY_SIGNAL");
@@ -41,27 +37,53 @@ public class DummySystemAdapter extends AbstractSystemAdapter {
     public void receiveGeneratedData(byte[] data) {
         // handle the incoming data as described in the benchmark description
         logger.debug("receiveGeneratedData("+new String(data)+"): "+new String(data));
+
     }
 
     @Override
     public void receiveGeneratedTask(String taskId, byte[] data) {
         // handle the incoming task and create a result
-        String result = "result_"+taskId;
+        // String result = "result_"+taskId;
+
+
+
+        RestTemplate rest = new RestTemplate();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+        map.add("taskId",taskId);
+        map.add("data", data);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(map, headers);
+
+        ResponseEntity<FCApi> response =
+                rest.exchange("http://localhost:8080/api/execTask/"+taskId,
+                        HttpMethod.POST, request, FCApi.class);
+
+        FCApi result =  response.getBody();
+
+        logger.debug("Task: "+result.getTaskId()+" Truth value:  " +result.getDefactoScore());
+
+
 
 //        DefactoBytes.FactCheckFromBytes(taskId,data);
 
-        if (Integer.parseInt(taskId) % 2 == 0)
+     /*   if (Integer.parseInt(taskId) % 2 == 0)
             result = "true";
         else
             result = "false";
 
+*/
 
+     //System.out.println(toByteArray(result.getDefactoScore()));
+        System.out.println("receiveGeneratedTask Method");
         logger.debug("receiveGeneratedTask({})->{}",taskId, new String(data));
 
         // Send the result to the evaluation storage
         try {
             logger.debug("sendResultToEvalStorage({})->{}", taskId, result);
-            sendResultToEvalStorage(taskId, result.getBytes());
+            sendResultToEvalStorage(taskId, toByteArray(result.getDefactoScore()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -75,6 +97,12 @@ public class DummySystemAdapter extends AbstractSystemAdapter {
 
         // Always close the super class after yours!
         super.close();
+    }
+
+    public static byte[] toByteArray(double value) {
+        byte[] bytes = new byte[8];
+        ByteBuffer.wrap(bytes).putDouble(value);
+        return bytes;
     }
 
 }

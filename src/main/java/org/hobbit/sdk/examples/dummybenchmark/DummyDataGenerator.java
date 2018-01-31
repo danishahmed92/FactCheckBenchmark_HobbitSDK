@@ -1,18 +1,16 @@
 package org.hobbit.sdk.examples.dummybenchmark;
 
-import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.hobbit.core.components.AbstractDataGenerator;
 import org.hobbit.core.rabbit.RabbitMQUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This code is here just for testing and debugging the SDK.
@@ -21,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public class DummyDataGenerator extends AbstractDataGenerator {
 	private static final Logger logger = LoggerFactory.getLogger(DummyDataGenerator.class);
-	private final String factBenchPath = "src/main/resources/factbench/test";//"src/main/resources/factbench/test/correct";
+	private final String factBenchPath = "src/main/resources/factbench/test/correct";
 
 
 	public DummyDataGenerator(){
@@ -60,6 +58,8 @@ public class DummyDataGenerator extends AbstractDataGenerator {
 
 			entry.getValue().forEach(model -> {
 				try {
+
+
 					sendDataToTaskGenerator(modelToBytes(model, entry.getKey()));
 				} catch (IOException e) {
 					e.printStackTrace();
