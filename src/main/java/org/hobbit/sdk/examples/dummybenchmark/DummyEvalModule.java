@@ -1,14 +1,19 @@
 package org.hobbit.sdk.examples.dummybenchmark;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.datatypes.xsd.impl.RDFhtml;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.VCARD;
+import org.hobbit.core.Constants;
 import org.hobbit.core.components.AbstractEvaluationModule;
 import org.hobbit.vocab.HOBBIT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Map;
 
 
 /**
@@ -17,15 +22,44 @@ import java.io.IOException;
  */
 
 public class DummyEvalModule extends AbstractEvaluationModule {
+
     private static final Logger logger = LoggerFactory.getLogger(DummyEvalModule.class);
 	private static int truePositive = 0;
     private static int falsePositive = 0;
     private static int trueNegative = 0;
     private static int falseNegative = 0;
-
-    private long taskSentTimestamp = System.currentTimeMillis();
-    private long responseReceivedTimestamp = System.currentTimeMillis();
+    private Property accuracyProperty = null;
+    private Property runTimeProperty = null;
     private long runTime = System.currentTimeMillis();
+
+
+
+
+
+    public Property getRunTimeProperty() {
+        return runTimeProperty;
+    }
+
+    public void setRunTimeProperty(Property runTimeProperty) {
+        this.runTimeProperty = runTimeProperty;
+    }
+
+    public Property getAccuracyProperty() {
+        return accuracyProperty;
+    }
+
+    public void setAccuracyProperty(Property accuracyProperty) {
+        this.accuracyProperty = accuracyProperty;
+    }
+
+
+    public long getRunTime() {
+        return runTime;
+    }
+
+    public void setRunTime(long runTime) {
+        this.runTime = runTime;
+    }
     // expectedData:    true/false
     // received Data:   true/false _percentage_
     // totalDataConsidered = trueNegative + falseNegative
@@ -33,9 +67,8 @@ public class DummyEvalModule extends AbstractEvaluationModule {
     // DataIdentifiedCorrectly = totalDataConsidered - DataIdentifiedIncorrectly
     @Override
     protected void evaluateResponse(byte[] expectedData, byte[] receivedData, long taskSentTimestamp, long responseReceivedTimestamp) throws Exception {
+        setRunTime( responseReceivedTimestamp - taskSentTimestamp );
         // evaluate the given response and store the result, e.g., increment internal counters
-        this.taskSentTimestamp = taskSentTimestamp;
-        this.responseReceivedTimestamp = responseReceivedTimestamp;
 
         String rData = new String((receivedData));
         String eData = new String((expectedData));
@@ -79,10 +112,43 @@ public class DummyEvalModule extends AbstractEvaluationModule {
         logger.debug("summarizeEvaluation()");
         // All tasks/responsens have been evaluated. Summarize the results,
         // write them into a Jena model and send it to the benchmark controller.
-        logger.debug("Overall accuracy of FactCheck was " + (calculateAccuracy()*100) + "%");
+
         Model model = createDefaultModel();
         Resource experimentResource = model.getResource(experimentUri);
         model.add(experimentResource , RDF.type, HOBBIT.Experiment);
+        /*//print keys that environment has... to see
+        what they are and where they are....*/
+
+        double experimentAccuracy = calculateAccuracy() * (double)100;
+        Literal accuracyLiteral = model.createTypedLiteral(experimentAccuracy, XSDDatatype.XSDdouble);
+        Map<String, String> env = System.getenv();
+        if (!env.containsKey("accuracy")) {
+            //throw new IllegalArgumentException("Couldn't get \"" + "accuracy" + "\" from the environment. Aborting.");
+        }
+        try {
+            env.put("accuracy", "Accuracy");
+            model.createProperty(env.get("accuracy"));
+            setAccuracyProperty(model.getProperty("accuracy"));
+            model.add(experimentResource, getAccuracyProperty(), accuracyLiteral);
+        }catch(Exception e) {
+        }
+        logger.debug("Overall accuracy of FactCheck was " + (calculateAccuracy()*100) + "%");
+
+
+
+        Literal runtimeLiteral = model.createTypedLiteral(getRunTime(), XSDDatatype.XSDlong);
+        if (!env.containsKey("runtime")) {
+            //throw new IllegalArgumentException("Couldn't get \"" + "runtime" + "\" from the environment. Aborting.");
+        }
+        try {
+            env.put("runtime", "Runtime");
+            model.createProperty(env.get("runtime"));
+            setRunTimeProperty(model.getProperty("runtime"));
+            model.add(experimentResource, getRunTimeProperty(), runtimeLiteral);
+        }catch(Exception e) {
+        }
+        logger.debug("Overall runtime of the experiment was" + getRunTime() + "ms");
+
 
         return model;
     }
@@ -99,5 +165,4 @@ public class DummyEvalModule extends AbstractEvaluationModule {
 
         }
     }
-
 }

@@ -11,6 +11,7 @@
     hobbit:measuresKPI <http://project-hobbit.eu/sml-benchmark-1.0/averageLatencyNanos>;
     hobbit:measuresKPI <http://project-hobbit.eu/sml-benchmark-1.0/throughputBytesPerSecond>;
     hobbit:measuresKPI <http://project-hobbit.eu/sml-benchmark-1.0/terminationType>;
+    hobbit:measuresKPI <http://project-hobbit.eu/sml-benchmark-1.0/accuracy>;
 
     hobbit:hasParameter <http://project-hobbit.eu/sml-benchmark-1.0/dataPointCount>;
     hobbit:hasParameter <http://project-hobbit.eu/sml-benchmark-1.0/benchmarkMode>;
@@ -35,6 +36,11 @@
     rdfs:range xsd:string.
 
 <http://project-hobbit.eu/resources/sml-benchmark-1.0/throughputBytesPerSecond> a hobbit:KPI;
+    rdfs:range xsd:double.
+
+<http://project-hobbit.eu/resources/sml-benchmark-1.0/accuracy> a hobbit:KPI;
+    rdfs:label "Accuracy"@en;
+    rdfs:comment "Accuracy."@en;
     rdfs:range xsd:double.
 
 <http://project-hobbit.eu/resources/sml-benchmark-1.0/benchmarkMode> a hobbit:ConfigurableParameter, hobbit:FeatureParameter;
