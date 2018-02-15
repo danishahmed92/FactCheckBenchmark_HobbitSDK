@@ -2,7 +2,7 @@ package org.hobbit.sdk.examples.dummybenchmark;
 
 
 import org.hobbit.core.components.AbstractSystemAdapter;
-import org.hobbit.sdk.FCApi;
+import org.hobbit.sdk.FactCheckExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 /**
@@ -36,17 +37,16 @@ public class DummySystemAdapter extends AbstractSystemAdapter {
     @Override
     public void receiveGeneratedData(byte[] data) {
         // handle the incoming data as described in the benchmark description
-        logger.debug("receiveGeneratedData("+new String(data)+"): "+new String(data));
+        logger.debug("receiveGeneratedData(" + new String(data) + "): " + new String(data));
 
     }
 
     @Override
     public void receiveGeneratedTask(String taskId, byte[] data) {
         // handle the incoming task and create a result
-        // String result = "result_"+taskId;
 
-
-
+        //TODO invoke API and process result
+        /*
         RestTemplate rest = new RestTemplate();
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.add("taskId",taskId);
@@ -61,33 +61,38 @@ public class DummySystemAdapter extends AbstractSystemAdapter {
                 rest.exchange("http://localhost:8080/api/execTask/"+taskId,
                         HttpMethod.POST, request, FCApi.class);
 
-        FCApi result =  response.getBody();
+        FCApi apiResult =  response.getBody();
 
-        logger.debug("Task: "+result.getTaskId()+" Truth value:  " +result.getDefactoScore());
+        try {
+            logger.debug("sendResultToEvalStorage({})->{}", taskId, apiResult.getData());
+            sendResultToEvalStorage(taskId, toByteArray(apiResult.getDefactoScore()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+*/
 
+        int min = 0;
+        int max = 100;
+        String result = "";
+        int randomNum = ThreadLocalRandom.current().nextInt(min, max + 1);
+        double confidence = randomNum * 0.0011;
 
-
-//        DefactoBytes.FactCheckFromBytes(taskId,data);
-
-     /*   if (Integer.parseInt(taskId) % 2 == 0)
+        if (Integer.parseInt(taskId) % 2 == 0)
             result = "true";
         else
             result = "false";
 
-*/
+        result += ":*:" + String.valueOf(confidence);
 
-     //System.out.println(toByteArray(result.getDefactoScore()));
-        System.out.println("receiveGeneratedTask Method");
-        logger.debug("receiveGeneratedTask({})->{}",taskId, new String(data));
+        logger.debug("receiveGeneratedTask({})->{}", taskId, new String(data));
 
         // Send the result to the evaluation storage
         try {
             logger.debug("sendResultToEvalStorage({})->{}", taskId, result);
-            sendResultToEvalStorage(taskId, toByteArray(result.getDefactoScore()));
+            sendResultToEvalStorage(taskId, result.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -98,12 +103,5 @@ public class DummySystemAdapter extends AbstractSystemAdapter {
         // Always close the super class after yours!
         super.close();
     }
-
-    public static byte[] toByteArray(double value) {
-        byte[] bytes = new byte[8];
-        ByteBuffer.wrap(bytes).putDouble(value);
-        return bytes;
-    }
-
 }
 
