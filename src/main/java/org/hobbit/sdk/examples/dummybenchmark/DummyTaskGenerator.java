@@ -27,14 +27,13 @@ public class DummyTaskGenerator extends AbstractTaskGenerator {
     @Override
     protected void generateTask(byte[] data) throws Exception {
 
-        //Split data using sepatator to extract query and expected
-        String[] dataString = new String(data).split(REGEX_SEPARATOR);
-
-      //  logger.debug("Expected Answer: " + dataString[0] + "\nData: " + dataString[1]);
 
         // Create tasks based on the incoming data inside this method.
         // You might want to use the id of this task generator and the
         // number of all task generators running in parallel.
+
+        //Split data using sepatator to extract query and expected
+        String[] dataString = new String(data).split(REGEX_SEPARATOR);
 
         //TODO Research how these data members can be used
         logger.debug("generateTask()");
@@ -47,9 +46,7 @@ public class DummyTaskGenerator extends AbstractTaskGenerator {
         // Send the task to the system (and store the timestamp)
         long timestamp = System.currentTimeMillis();
 
-
-        System.out.println(taskId);
-      //  logger.debug("sendTaskToSystemAdapter({})->{}", taskId, dataString[1]);
+         logger.debug("sendTaskToSystemAdapter({})->{}", taskId, dataString[1]);
         sendTaskToSystemAdapter(taskId, dataString[1].getBytes());
 
         // Send the expected answer to the evaluation store
@@ -63,6 +60,5 @@ public class DummyTaskGenerator extends AbstractTaskGenerator {
         // Always close the super class after yours!
         super.close();
     }
-
 
 }

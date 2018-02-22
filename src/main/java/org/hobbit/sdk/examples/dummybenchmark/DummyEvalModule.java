@@ -1,5 +1,6 @@
 package org.hobbit.sdk.examples.dummybenchmark;
 
+import mloss.roc.Curve;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.datatypes.xsd.impl.RDFhtml;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 
@@ -31,35 +33,9 @@ public class DummyEvalModule extends AbstractEvaluationModule {
     private Property accuracyProperty = null;
     private Property runTimeProperty = null;
     private long runTime = System.currentTimeMillis();
+    private  ArrayList<Integer> trueLabels= new ArrayList<>();
+    private  ArrayList<Double> confidenceScores = new ArrayList<>();
 
-
-
-
-
-    public Property getRunTimeProperty() {
-        return runTimeProperty;
-    }
-
-    public void setRunTimeProperty(Property runTimeProperty) {
-        this.runTimeProperty = runTimeProperty;
-    }
-
-    public Property getAccuracyProperty() {
-        return accuracyProperty;
-    }
-
-    public void setAccuracyProperty(Property accuracyProperty) {
-        this.accuracyProperty = accuracyProperty;
-    }
-
-
-    public long getRunTime() {
-        return runTime;
-    }
-
-    public void setRunTime(long runTime) {
-        this.runTime = runTime;
-    }
     // expectedData:    true/false
     // received Data:   true/false _percentage_
     // totalDataConsidered = trueNegative + falseNegative
@@ -70,20 +46,29 @@ public class DummyEvalModule extends AbstractEvaluationModule {
         setRunTime( responseReceivedTimestamp - taskSentTimestamp );
         // evaluate the given response and store the result, e.g., increment internal counters
 
-        String rData = new String((receivedData));
-        String eData = new String((expectedData));
+        String []receivedResponse = (new String(receivedData)).split(":\\*:");
+        String expectedResponse = new String(expectedData);
 
-        if (rData.contains(eData)) {
-            if (eData.equals("true"))
+        if (receivedResponse[0].contains(expectedResponse)) {
+            if (expectedResponse.equals("true"))
                 truePositive++;
             else
                 trueNegative++;
-        } else if (eData.equals("true") && rData.contains("false")) {
+        } else if (expectedResponse.equals("true") && receivedResponse[0].contains("false")) {
             falseNegative++;
-        } else if (rData.contains("true") && eData.equals("false")) {
+        } else if (receivedResponse[0].contains("true") && expectedResponse.equals("false")) {
             falsePositive++;
         }
         runTime = taskSentTimestamp - responseReceivedTimestamp;
+
+        //Update accumulators for ROC/AUC calculation
+        confidenceScores.add(Double.parseDouble(receivedResponse[1]));
+
+        if(expectedResponse.equals("true"))
+            trueLabels.add(1);
+        else
+            trueLabels.add(0);
+
         logger.debug("evaluateResponse()");
         logger.debug(new String(expectedData) + ">>>>>" + new String(receivedData));
         if (receivedData.toString().contains(expectedData.toString()))
@@ -119,6 +104,14 @@ public class DummyEvalModule extends AbstractEvaluationModule {
         /*//print keys that environment has... to see
         what they are and where they are....*/
 
+
+        //Calculate AUC and obtain the points for the ROC curve
+        Curve rocCurve = new Curve.PrimitivesBuilder().predicteds(confidenceScores).actuals(trueLabels).build();
+        double [][]rocPoints = rocCurve.rocPoints();
+
+        //TODO add ROC/AUC values to the model
+        logger.debug("ROC/AUC: "+rocCurve.rocArea());
+
         double experimentAccuracy = calculateAccuracy() * (double)100;
         Literal accuracyLiteral = model.createTypedLiteral(experimentAccuracy, XSDDatatype.XSDdouble);
         Map<String, String> env = System.getenv();
@@ -151,6 +144,30 @@ public class DummyEvalModule extends AbstractEvaluationModule {
 
 
         return model;
+    }
+
+    public Property getRunTimeProperty() {
+        return runTimeProperty;
+    }
+
+    public void setRunTimeProperty(Property runTimeProperty) {
+        this.runTimeProperty = runTimeProperty;
+    }
+
+    public Property getAccuracyProperty() {
+        return accuracyProperty;
+    }
+
+    public void setAccuracyProperty(Property accuracyProperty) {
+        this.accuracyProperty = accuracyProperty;
+    }
+
+    public long getRunTime() {
+        return runTime;
+    }
+
+    public void setRunTime(long runTime) {
+        this.runTime = runTime;
     }
 
     @Override
